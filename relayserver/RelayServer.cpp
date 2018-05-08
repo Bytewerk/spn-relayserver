@@ -72,6 +72,11 @@ int RelayServer::Run()
 	h.onConnection(
 		[](uWS::WebSocket<uWS::SERVER> *ws, uWS::HttpRequest req)
 		{
+			unsigned int timeout = 1000; // in milliseconds
+			if(setsockopt(ws->getFd(), IPPROTO_TCP, TCP_USER_TIMEOUT, &timeout, sizeof(unsigned int)) < 0) {
+				std::cerr << "Cannot set user timeout" << std::endl;
+			}
+
 			ws->setUserData(new WebsocketConnection(ws));
 		}
 	);
